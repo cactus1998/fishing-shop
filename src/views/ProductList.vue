@@ -12,10 +12,10 @@
         >
           🛒
           <span
-            v-if="cartStore.cartCount > 0"
+            v-if="cartStore.itemCount > 0"
             class="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
           >
-            {{ cartStore.cartCount }}
+            {{ cartStore.itemCount }}
           </span>
         </button>
 
@@ -35,8 +35,16 @@
               <span class="text-sm">NT$ {{ item.price * item.quantity }}</span>
             </div>
             <p class="text-right font-medium pt-2 border-t">
-              總計：NT$ {{ cartStore.total }}
+              總計：NT$ {{ cartStore.totalPrice }}
             </p>
+
+            <!-- 新增：前往結帳按鈕 -->
+            <button
+              @click="goCheckout"
+              class="block mt-3 w-full text-center px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+            >
+              前往結帳
+            </button>
           </div>
           <p v-else class="text-gray-500 text-sm">購物車是空的</p>
         </div>
@@ -50,31 +58,27 @@
         :key="product.id"
         :product="product"
       />
-      <ColorCard
-          v-for="(color, index) in specialColor"
-          :key="index"
-          :color="color"
-          :price="7490"
-          :discount="10"
-          :selectedColor="selectedColor"
-          @select="selectedColor = $event"
-      />
     </main>
   </div>
 </template>
 
 <script setup>
-import { ref,computed } from "vue";
+import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useCartStore } from "@/stores/cart";
 import ProductCard from "@/components/card/ProductCard.vue";
-import ColorCard from "@/components/card/ColorCard.vue";
 import { products } from '@/data/products';
 
 const cartStore = useCartStore();
 const showCart = ref(false);
+const router = useRouter();
 
 const toggleCart = () => {
   showCart.value = !showCart.value;
+};
+
+const goCheckout = () => {
+  router.push("/checkout"); // 直接跳轉
 };
 
 </script>

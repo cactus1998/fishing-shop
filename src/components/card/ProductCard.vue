@@ -28,9 +28,26 @@
           NT$ {{ product.price }}
         </span>
       </p>
+
+      <!-- 數量控制 -->
+      <div class="flex items-center mt-2 space-x-3">
+        <button
+          @click="decreaseQuantity"
+          class="px-3 py-1 bg-gray-700 rounded-full hover:bg-gray-600 transition"
+        >－</button>
+
+        <span class="text-lg font-medium">{{ quantity }}</span>
+
+        <button
+          @click="increaseQuantity"
+          class="px-3 py-1 bg-gray-700 rounded-full hover:bg-gray-600 transition"
+        >＋</button>
+      </div>
+
+      <!-- 加入購物車 -->
       <button
-        @click="addToCart(product)"
-        class="mt-2 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 transition"
+        @click="addToCart(product, quantity)"
+        class="mt-3 px-4 py-2 rounded-full bg-blue-600 hover:bg-blue-700 transition w-full"
       >
         加入購物車
       </button>
@@ -39,7 +56,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { ref, computed } from "vue";
 import { useCartStore } from "@/stores/cart";
 
 import { Swiper, SwiperSlide } from 'swiper/vue';
@@ -57,20 +74,36 @@ const props = defineProps({
 
 const cartStore = useCartStore();
 
+// 數量 state
+const quantity = ref(1);
+
+const increaseQuantity = () => {
+  quantity.value++;
+};
+
+const decreaseQuantity = () => {
+  if (quantity.value > 1) {
+    quantity.value--;
+  }
+};
+
+// 計算圖片陣列
 const images = computed(() =>
   Object.keys(props.product)
     .filter((key) => key.startsWith("image"))
     .map((key) => props.product[key])
 );
 
+// 折扣後價格
 const discountedPrice = computed(() =>
   props.product.discount
     ? Math.round(props.product.price * (1 - props.product.discount / 100))
     : props.product.price
 );
 
-const addToCart = (product) => {
-  cartStore.addToCart(product);
+// 加入購物車（帶數量）
+const addToCart = (product, qty) => {
+  cartStore.addToCart({ ...product, quantity: qty });
 };
 </script>
 
