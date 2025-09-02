@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "element-plus": "^2.11.1",
+    "firebase": "^12.2.1",
     "pinia": "^3.0.3",
     "sweetalert2": "^11.22.5",
     "swiper": "^11.2.10",
