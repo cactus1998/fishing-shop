@@ -18,7 +18,6 @@
             {{ cartStore.itemCount }}
           </span>
         </button>
-
         <!-- 購物車下拉 -->
         <div
           v-if="showCart"
