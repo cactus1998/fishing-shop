@@ -1,100 +1,131 @@
 <template>
-  <div class="max-w-3xl mx-auto px-4 py-10 font-sans text-gray-900">
-    <h1 class="text-2xl font-semibold mb-6">結帳</h1>
+  <div class="min-h-screen bg-gray-100 py-10 font-sans text-gray-900">
+    <div class="max-w-3xl mx-auto px-4">
 
-    <div v-if="cartStore.cart.length > 0" class="space-y-4">
-      <!-- 商品列 -->
-      <div
-        v-for="item in cartStore.cart"
-        :key="item.id"
-        class="flex items-center justify-between border-b pb-4"
-      >
-        <!-- 左側：縮圖 + 商品名稱 -->
-        <div class="flex items-center space-x-4">
-          <img
-            :src="item.image0 || 'https://via.placeholder.com/80'"
-            alt="商品圖片"
-            class="w-20 h-20 object-cover rounded-md"
-          />
-          <div>
-            <h2 class="font-medium">{{ item.name }}</h2>
-            <p class="text-gray-500">單價：NT$ {{ item.price }}</p>
+      <h1 class="text-3xl font-bold text-center mb-10">結帳</h1>
+
+      <!-- 購物車有商品 -->
+      <div v-if="cartStore.cart.length > 0">
+        <div class="bg-white shadow-md rounded-2xl p-6 space-y-6">
+          
+          <!-- 商品卡片 -->
+          <div
+            v-for="item in cartStore.cart"
+            :key="item.id"
+            class="flex items-center justify-between border-b pb-4"
+          >
+            <!-- 左側：圖片 + 名稱 -->
+            <div class="flex items-center space-x-4">
+              <img
+                :src="item.image0 || 'https://via.placeholder.com/80'"
+                alt="商品圖片"
+                class="w-20 h-20 object-cover rounded-lg"
+              />
+              <div>
+                <h2 class="font-medium text-lg">{{ item.name }}</h2>
+                <p class="text-gray-500">單價：NT$ {{ item.price }}</p>
+              </div>
+            </div>
+
+            <!-- 數量控制 -->
+            <el-input-number
+              v-model="item.quantity"
+              :min="1"
+              @change="updateQuantity(item.id, $event)"
+            />
+
+            <!-- 小計 -->
+            <span class="font-medium w-24 text-right">
+              NT$ {{ item.price * item.quantity }}
+            </span>
+
+            <!-- 刪除按鈕 -->
+            <el-button
+              type="danger"
+              plain
+              @click="cartStore.removeItem(item.id)"
+            >
+              刪除
+            </el-button>
           </div>
+
+          <!-- 總計 -->
+          <p class="text-right font-medium text-lg mt-2">
+            總計：NT$ {{ cartStore.totalPrice }}
+          </p>
+
+          <!-- 表單 -->
+          <el-form
+            ref="orderFormRef"
+            :model="form"
+            :rules="rules"
+            status-icon
+            label-position="right"
+            label-width="80px"
+            class="space-y-4 mt-4"
+          >
+            <el-form-item label="姓名" prop="name">
+              <el-input v-model="form.name" placeholder="請輸入姓名" />
+            </el-form-item>
+
+            <el-form-item label="電話" prop="phone">
+              <el-input v-model="form.phone" placeholder="請輸入電話" />
+            </el-form-item>
+
+            <el-form-item label="信箱" prop="email">
+              <el-input v-model="form.email" placeholder="請輸入電子信箱" />
+            </el-form-item>
+
+            <el-form-item label="地址" prop="address">
+              <el-input v-model="form.address" placeholder="請輸入地址" />
+            </el-form-item>
+
+            <el-form-item>
+              <el-button
+                type="success"
+                class="w-full rounded-full mr-20"
+                size="large"
+                @click="submitOrder(orderFormRef)"
+              >
+                確認下單
+              </el-button>
+            </el-form-item>
+          </el-form>
         </div>
-
-        <!-- 中間：數量控制 -->
-        <el-input-number
-          v-model="item.quantity"
-          :min="1"
-          @change="updateQuantity(item.id, $event)"
-        />
-
-        <!-- 小計 -->
-        <span class="font-medium w-24 text-right">
-          NT$ {{ item.price * item.quantity }}
-        </span>
-
-        <!-- 刪除按鈕 -->
-        <el-button
-          type="danger"
-          plain
-          @click="cartStore.removeItem(item.id)"
-        >
-          刪除
-        </el-button>
       </div>
 
-      <!-- 總計 -->
-      <p class="text-right font-medium text-lg mt-4">
-        總計：NT$ {{ cartStore.totalPrice }}
-      </p>
+      <!-- 購物車空 -->
+      <div v-else class="flex flex-col items-center justify-center mt-20">
+        <div class="bg-white shadow-lg rounded-2xl p-10 w-full max-w-sm text-center">
+          <svg
+            class="mx-auto mb-4 w-16 h-16 text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7a1 1 0 00.9 1.5h12.1M7 13V6h13v7M16 21a2 2 0 100-4 2 2 0 000 4zm-8 0a2 2 0 100-4 2 2 0 000 4z">
+            </path>
+          </svg>
 
-      <!-- 表單 -->
-      <el-form
-        ref="orderFormRef"
-        :model="form"
-        :rules="rules"
-        status-icon
-        class="space-y-4 mt-6"
-      >
-        <el-form-item label="姓名" prop="name">
-          <el-input v-model="form.name" placeholder="請輸入姓名" />
-        </el-form-item>
+          <p class="text-gray-500 text-lg mb-6">購物車目前沒有商品</p>
 
-        <el-form-item label="電話" prop="phone">
-          <el-input v-model="form.phone" placeholder="請輸入電話" />
-        </el-form-item>
-
-        <el-form-item label="地址" prop="address">
-          <el-input v-model="form.address" placeholder="請輸入地址" />
-        </el-form-item>
-
-        <el-form-item>
           <el-button
             type="success"
-            class="w-full mx-20"
+            class="w-full rounded-full"
             size="large"
-            @click="submitOrder(orderFormRef)"
+            @click="goBack"
           >
-            確認下單
+            返回購買頁面
           </el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div v-else>
-      <p class="text-gray-500 text-center">購物車是空的</p>
-      <el-button
-          type="success"
-          class="w-full"
-          size="large"
-          @click="goBack"
-        >
-          返回購買頁面
-      </el-button>
-    </div>
+        </div>
+      </div>
 
+    </div>
   </div>
 </template>
+
 
 <script setup>
 import { reactive, ref } from "vue";
@@ -118,7 +149,7 @@ const rules = {
     { required: true, message: "請輸入電話", trigger: "blur" },
     { pattern: /^[0-9-]+$/, message: "電話格式不正確", trigger: "blur" },
   ],
-  address: [{ required: true, message: "請輸入地址", trigger: "blur" }],
+  email: [{ required: true, message: "請輸入電子信箱", trigger: "blur" }],
 };
 
 const submitOrder = async (formRef) => {
@@ -127,26 +158,28 @@ const submitOrder = async (formRef) => {
     if (valid) {
       Swal.fire({
         icon: "success",
-        title: "訂單完成！",
+        title: "🎉 訂單完成！",
         html: `
-          <p>感謝購買 🎉</p>
-          <p><b>姓名：</b>${form.name}</p>
-          <p><b>電話：</b>${form.phone}</p>
-          <p><b>地址：</b>${form.address}</p>
-          <p><b>總金額：</b>NT$${cartStore.totalPrice}</p>
+          <div style="text-align:left; margin-top:10px;">
+            <p><strong>姓名：</strong> ${form.name}</p>
+            <p><strong>電話：</strong> ${form.phone}</p>
+            <p><strong>地址：</strong> ${form.address}</p>
+            <p><strong>總金額：</strong> <span style="color:#27ae60;">NT$${cartStore.totalPrice}</span></p>
+          </div>
         `,
+        showCloseButton: true,
         confirmButtonText: "返回首頁",
       }).then(() => {
         cartStore.clear();
-        router.go(-1);
+        goBack();
       });
     } else {
-      // 驗證失敗，彈出錯誤訊息
       Swal.fire({
         icon: "error",
-        title: "資料未填寫完整",
-        text: "請檢查必填欄位！",
+        title: "❌ 資料未填寫完整",
+        html: `<p style="color:#e74c3c;">請檢查必填欄位！</p>`,
         confirmButtonText: "確定",
+        confirmButtonColor: "#e74c3c",
       });
     }
   });
