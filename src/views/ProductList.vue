@@ -2,7 +2,7 @@
   <div class="max-w-6xl mx-auto px-4 py-10 font-sans text-gray-900">
     <!-- Header -->
     <header class="flex justify-between items-center mb-10">
-      <h1 class="text-3xl font-semibold">商品列表</h1>
+      <h1 class="text-3xl font-semibold">樂咖大物輪 購物網站</h1>
 
       <!-- 購物車按鈕 -->
       <div class="relative">
