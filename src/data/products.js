@@ -4,7 +4,7 @@ export const products = [
     id: 1,
     name: "黃色",
     price: 3000,
-    discount: 5,
+    // discount: 5,
     image0: "/fishing-shop/images/輪子/S__17588228_0.jpg",
     image1: "/fishing-shop/images/輪子/S__17588230_0.jpg",
     image2: "/fishing-shop/images/輪子/S__17588231_0.jpg",
