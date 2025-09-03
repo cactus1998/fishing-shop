@@ -1,4 +1,5 @@
 <template>
+  <FullScreenLoading />
   <div class="min-h-screen bg-gray-100 py-10 font-sans text-gray-900">
     <div class="max-w-3xl mx-auto px-4">
       <div class="flex items-center justify-between mb-10">
@@ -152,6 +153,10 @@ import Swal from "sweetalert2";
 import { db } from "@/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
+import { useLoadingStore } from "@/stores/loading";
+const loadingStore = useLoadingStore();
+import FullScreenLoading from "@/components/FullScreenLoading.vue";
+
 const cartStore = useCartStore();
 const router = useRouter();
 
@@ -228,7 +233,7 @@ const submitOrder = async (formRef) => {
       });
       return;
     }
-
+    loadingStore.show();
     try {
       // ✅ 寫入 Firestore：orders 集合
       const docRef = await addDoc(collection(db, "orders"), {
@@ -267,6 +272,8 @@ const submitOrder = async (formRef) => {
         title: "送出失敗",
         text: "無法寫入 Firebase，請稍後再試。",
       });
+    } finally {
+      loadingStore.hide();
     }
   });
 };
