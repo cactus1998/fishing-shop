@@ -162,7 +162,6 @@ const router = useRouter();
 
 const orderFormRef = ref(null);
 
-// ✅ 加上 email 欄位（與畫面一致）
 const form = reactive({
   name: "",
   phone: "",
@@ -170,7 +169,7 @@ const form = reactive({
   address: "",
 });
 
-// ✅ 補上 address 規則、email 格式驗證
+// 驗證
 const rules = {
   name: [{ required: true, message: "請輸入姓名", trigger: "blur" }],
   phone: [
@@ -235,7 +234,6 @@ const submitOrder = async (formRef) => {
     }
     loadingStore.show();
     try {
-      // ✅ 寫入 Firestore：orders 集合
       const docRef = await addDoc(collection(db, "orders"), {
         customer: { ...form },
         items: cartStore.cart,
