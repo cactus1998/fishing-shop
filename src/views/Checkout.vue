@@ -238,7 +238,7 @@ const submitOrder = async (formRef) => {
         customer: { ...form },
         items: cartStore.cart,
         total: cartStore.totalPrice,
-        status: "pending",
+        status: "未送單",
         createdAt: serverTimestamp(),
       });
 
