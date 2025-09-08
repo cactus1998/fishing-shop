@@ -3,10 +3,10 @@
   <div class="min-h-screen bg-gray-100 py-10 font-sans text-gray-900">
     <div class="max-w-3xl mx-auto px-4">
       <div class="flex items-center justify-between mb-10">
-        <!-- 中間的結帳標題 -->
+        <!-- 結帳標題 -->
         <h1 class="text-3xl font-bold text-center flex-1">購物車</h1>
 
-        <!-- 右邊的刪除按鈕 -->
+        <!-- 返回按鈕 -->
         <el-button
           type="info"
           plain
