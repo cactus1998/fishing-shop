@@ -40,7 +40,7 @@
             <!-- 新增：前往結帳按鈕 -->
             <button
               @click="goCheckout"
-              class="block mt-3 w-full text-center px-4 py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition"
+              class="block mt-3 w-full text-center px-4 py-2 bg-amber-600 text-white rounded-full hover:bg-amber-700 transition"
             >
               前往結帳
             </button>

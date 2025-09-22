@@ -3,11 +3,13 @@
   <div class="min-h-screen bg-gray-100 py-10 font-sans text-gray-900">
     <div class="max-w-3xl mx-auto px-4">
       <div class="flex items-center justify-between mb-10">
+        <div class="w-14"></div>
         <!-- 結帳標題 -->
         <h1 class="text-3xl font-bold text-center flex-1">購物車</h1>
 
         <!-- 返回按鈕 -->
         <el-button
+        class="w-14"
           type="info"
           plain
           @click="goBack"
@@ -100,7 +102,7 @@
             <el-form-item>
               <el-button
                 type="success"
-                class="w-full rounded-full mr-20"
+                class="w-full rounded-full mt-20 mr-20"
                 size="large"
                 @click="submitOrder(orderFormRef)"
               >
