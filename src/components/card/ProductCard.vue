@@ -1,26 +1,43 @@
 <template>
-  <div class="w-80 sm:w-96 md:w-full lg:w-full rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition">
-    <!-- 上方圖片（輪播，高度 h-80） -->
-    <swiper
-      :modules="[Autoplay, Pagination]"
-      :grabCursor="true"
-      :loop="true"
-      :autoplay="{ delay: 4500, disableOnInteraction: false }"
-      :pagination="true"
-      effect="cube"
-      :cubeEffect="{ shadow: true, slideShadows: true, shadowOffset: 20, shadowScale: 0.94 }"
-      class="h-80"
-    >
-      <swiper-slide v-for="(image, index) in images" :key="index">
-        <img :src="image" class="swiper-image" />
-      </swiper-slide>
-    </swiper>
+  <div
+    class="w-80 sm:w-96 md:w-full lg:w-full rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition"
+  >
+    <!-- 上方圖片 -->
+    <div class="h-80">
+      <template v-if="images.length > 0">
+        <swiper
+          :modules="[Autoplay, Pagination]"
+          :grabCursor="true"
+          :loop="true"
+          :autoplay="{ delay: 4500, disableOnInteraction: false }"
+          :pagination="true"
+          effect="cube"
+          :cubeEffect="{
+            shadow: true,
+            slideShadows: true,
+            shadowOffset: 20,
+            shadowScale: 0.94,
+          }"
+          class="h-full"
+        >
+          <swiper-slide v-for="(image, index) in images" :key="index">
+            <img :src="image" class="swiper-image" />
+          </swiper-slide>
+        </swiper>
+      </template>
+      <template v-else>
+        <el-empty
+          description="暫無圖片"
+          class="h-full flex items-center justify-center"
+        />
+      </template>
+    </div>
 
     <!-- 下方商品資訊 -->
     <div class="p-4 text-gray-800">
       <h2 class="text-lg font-semibold">{{ product.name }}</h2>
       <p class="mt-1">
-        <span class="text-amber-600 font-bold">NT$ {{ discountedPrice }}</span>
+        <span class="text-red-600 font-bold">NT$ {{ discountedPrice }}</span>
         <span
           v-if="product.discount"
           class="text-gray-400 ml-2 line-through text-sm"
@@ -34,20 +51,24 @@
         <button
           @click="decreaseQuantity"
           class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition"
-        >－</button>
+        >
+          －
+        </button>
 
         <span class="text-lg font-medium">{{ quantity }}</span>
 
         <button
           @click="increaseQuantity"
           class="px-3 py-1 bg-gray-200 rounded-full hover:bg-gray-300 transition"
-        >＋</button>
+        >
+          ＋
+        </button>
       </div>
 
       <!-- 加入購物車 -->
       <button
         @click="addToCart(product, quantity)"
-        class="mt-4 px-4 py-2 rounded-full bg-amber-500 hover:bg-amber-600 text-white transition w-full"
+        class="mt-4 px-4 py-2 rounded-full bg-blue-500 hover:bg-blue-600 text-white transition w-full"
       >
         加入購物車
       </button>
@@ -59,7 +80,7 @@
 import { ref, computed } from "vue";
 import { useCartStore } from "@/stores/cart";
 
-import { Swiper, SwiperSlide } from 'swiper/vue';
+import { Swiper, SwiperSlide } from "swiper/vue";
 import { Autoplay, Pagination } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
