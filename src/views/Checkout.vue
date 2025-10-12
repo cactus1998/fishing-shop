@@ -106,6 +106,7 @@
             :rules="rules"
             label-position="top"
             class="space-y-4"
+            @submit.prevent
           >
             <el-form-item label="姓名" prop="name">
               <el-input 
@@ -143,7 +144,8 @@
 
             <el-form-item class="mt-8">
               <button
-                @click="submitOrder(orderFormRef)"
+                type="button"
+                @click="submitOrder"
                 class="w-full px-6 py-4 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition text-lg"
               >
                 確認下單
@@ -251,10 +253,13 @@ const querySearch = (queryString, cb) => {
   cb(results);
 };
 
-const submitOrder = async (formRef) => {
-  if (!formRef) return;
+const submitOrder = async () => {
+  if (!orderFormRef.value) return;
 
-  await formRef.validate(async (valid) => {
+  try {
+    // 驗證表單
+    const valid = await orderFormRef.value.validate();
+    
     if (!valid) {
       Swal.fire({
         icon: "error",
@@ -274,7 +279,10 @@ const submitOrder = async (formRef) => {
       });
       return;
     }
+
+    // 驗證通過後才顯示 loading
     loadingStore.show();
+
     try {
       const docRef = await addDoc(collection(db, "orders"), {
         customer: { ...form },
@@ -315,11 +323,22 @@ const submitOrder = async (formRef) => {
     } finally {
       loadingStore.hide();
     }
-  });
+  } catch (error) {
+    // 表單驗證失敗
+    console.log("表單驗證失敗:", error);
+  }
 };
 
-const updateQuantity = (id, newQty) => {
-  cartStore.setQuantity(id, newQty);
+// 增加數量
+const increaseQuantity = (item) => {
+  cartStore.setQuantity(item.id, item.quantity + 1);
+};
+
+// 減少數量
+const decreaseQuantity = (item) => {
+  if (item.quantity > 1) {
+    cartStore.setQuantity(item.id, item.quantity - 1);
+  }
 };
 
 const goBack = () => {
