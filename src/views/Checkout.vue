@@ -1,146 +1,186 @@
 <template>
   <FullScreenLoading />
-  <div class="min-h-screen bg-gray-100 py-10 font-sans text-gray-900">
-    <div class="max-w-3xl mx-auto px-4">
-      <div class="flex items-center justify-between mb-10">
-        <div class="w-14"></div>
-        <!-- 結帳標題 -->
-        <h1 class="text-3xl font-bold text-center flex-1">購物車</h1>
-
-        <!-- 返回按鈕 -->
-        <el-button
-        class="w-14"
-          type="info"
-          plain
-          @click="goBack"
-        >
-          返回
-        </el-button>
+  <div class="min-h-screen bg-gray-50 py-10">
+    <div class="max-w-4xl mx-auto px-4">
+      <!-- Header -->
+      <div class="bg-white shadow-md rounded-2xl p-6 mb-8">
+        <div class="flex items-center justify-between">
+          <button
+            @click="goBack"
+            class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 hover:bg-gray-200 transition"
+          >
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          
+          <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">購物車</h1>
+          
+          <div class="w-10"></div>
+        </div>
       </div>
 
       <!-- 購物車有商品 -->
-      <div v-if="cartStore.cart.length > 0">
-        <div class="bg-white shadow-md rounded-2xl p-6 space-y-6">
+      <div v-if="cartStore.cart.length > 0" class="space-y-6">
+        <!-- 商品列表 -->
+        <div class="bg-white shadow-md rounded-2xl p-6">
+          <h2 class="text-lg font-bold text-gray-900 mb-4">訂單明細</h2>
           
-          <!-- 商品卡片 -->
-          <div
-            v-for="item in cartStore.cart"
-            :key="item.id"
-            class="flex items-center justify-between border-b pb-4"
-          >
-            <!-- 左側：圖片 + 名稱 -->
-            <div class="flex items-center space-x-4">
+          <div class="space-y-4">
+            <div
+              v-for="item in cartStore.cart"
+              :key="item.id"
+              class="flex items-center gap-4 p-4 bg-gray-50 rounded-xl"
+            >
+              <!-- 商品圖片 -->
               <img
                 :src="item.image0 || 'https://via.placeholder.com/80'"
                 alt="商品圖片"
-                class="w-20 h-20 object-cover rounded-lg"
+                class="w-20 h-20 object-cover rounded-lg flex-shrink-0"
               />
-              <div>
-                <h2 class="font-medium text-lg">{{ item.name }}</h2>
-                <p class="text-gray-500">單價：NT$ {{ item.price }}</p>
+
+              <!-- 商品資訊 -->
+              <div class="flex-1 min-w-0">
+                <h3 class="font-medium text-gray-900 truncate">{{ item.name }}</h3>
+                <p class="text-sm text-gray-500 mt-1">NT$ {{ item.price }}</p>
               </div>
+
+              <!-- 數量控制 -->
+              <div class="flex items-center gap-2">
+                <button
+                  @click="decreaseQuantity(item)"
+                  class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                >
+                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4" />
+                  </svg>
+                </button>
+                
+                <span class="w-10 text-center font-medium text-gray-900">{{ item.quantity }}</span>
+                
+                <button
+                  @click="increaseQuantity(item)"
+                  class="w-8 h-8 flex items-center justify-center bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                >
+                  <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- 小計 -->
+              <div class="text-right min-w-[80px]">
+                <p class="font-bold text-red-600">
+                  NT$ {{ item.price * item.quantity }}
+                </p>
+              </div>
+
+              <!-- 刪除按鈕 -->
+              <button
+                @click="cartStore.removeItem(item.id)"
+                class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-red-50 transition text-gray-400 hover:text-red-600"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
             </div>
-
-            <!-- 數量控制 -->
-            <el-input-number
-              v-model="item.quantity"
-              :min="1"
-              @change="updateQuantity(item.id, $event)"
-            />
-
-            <!-- 小計 -->
-            <span class="font-medium w-24 text-right">
-              NT$ {{ item.price * item.quantity }}
-            </span>
-
-            <!-- 刪除按鈕 -->
-            <el-button
-              type="danger"
-              plain
-              @click="cartStore.removeItem(item.id)"
-            >
-              刪除
-            </el-button>
           </div>
 
           <!-- 總計 -->
-          <p class="text-right font-medium text-lg mt-2">
-            總計：NT$ {{ cartStore.totalPrice }}
-          </p>
+          <div class="mt-6 pt-6 border-t-2 border-gray-200">
+            <div class="flex justify-between items-center">
+              <span class="text-lg font-medium text-gray-600">總計</span>
+              <span class="text-2xl font-bold text-red-600">NT$ {{ cartStore.totalPrice }}</span>
+            </div>
+          </div>
+        </div>
 
-          <!-- 表單 -->
+        <!-- 收件資訊表單 -->
+        <div class="bg-white shadow-md rounded-2xl p-6">
+          <h2 class="text-lg font-bold text-gray-900 mb-4">收件資訊</h2>
+          
           <el-form
             ref="orderFormRef"
             :model="form"
             :rules="rules"
-            status-icon
-            label-position="right"
-            label-width="80px"
-            class="space-y-4 mt-4"
+            label-position="top"
+            class="space-y-4"
           >
             <el-form-item label="姓名" prop="name">
-              <el-input v-model="form.name" placeholder="請輸入姓名" />
+              <el-input 
+                v-model="form.name" 
+                placeholder="請輸入姓名"
+                size="large"
+              />
             </el-form-item>
 
             <el-form-item label="電話" prop="phone">
-              <el-input v-model="form.phone" placeholder="請輸入電話" />
+              <el-input 
+                v-model="form.phone" 
+                placeholder="請輸入電話"
+                size="large"
+              />
             </el-form-item>
 
-            <el-form-item label="信箱" prop="email">
+            <el-form-item label="電子信箱" prop="email">
               <el-autocomplete
                 v-model="form.email"
                 :fetch-suggestions="querySearch"
                 placeholder="請輸入電子信箱"
+                size="large"
                 class="w-full"
               />
             </el-form-item>
 
             <el-form-item label="地址" prop="address">
-              <el-input v-model="form.address" placeholder="請輸入地址" />
+              <el-input 
+                v-model="form.address" 
+                placeholder="請輸入地址"
+                size="large"
+              />
             </el-form-item>
 
-            <el-form-item>
-              <el-button
-                type="success"
-                class="w-full rounded-full mt-20 mr-20"
-                size="large"
+            <el-form-item class="mt-8">
+              <button
                 @click="submitOrder(orderFormRef)"
+                class="w-full px-6 py-4 bg-red-500 text-white font-bold rounded-xl hover:bg-red-600 transition text-lg"
               >
                 確認下單
-              </el-button>
+              </button>
             </el-form-item>
           </el-form>
         </div>
       </div>
 
       <!-- 購物車空 -->
-      <div v-else class="flex flex-col items-center justify-center mt-20">
-        <div class="bg-white shadow-lg rounded-2xl p-10 w-full max-w-sm text-center">
+      <div v-else class="bg-white shadow-md rounded-2xl p-10 text-center">
+        <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg
-            class="mx-auto mb-4 w-16 h-16 text-gray-300"
+            class="w-12 h-12 text-gray-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
           >
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.35 2.7a1 1 0 00.9 1.5h12.1M7 13V6h13v7M16 21a2 2 0 100-4 2 2 0 000 4zm-8 0a2 2 0 100-4 2 2 0 000 4z">
-            </path>
+            <path 
+              stroke-linecap="round" 
+              stroke-linejoin="round" 
+              stroke-width="2"
+              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+            />
           </svg>
-
-          <p class="text-gray-500 text-lg mb-6">購物車目前沒有商品</p>
-
-          <el-button
-            type="success"
-            class="w-full rounded-full"
-            size="large"
-            @click="goBack"
-          >
-            返回購買頁面
-          </el-button>
         </div>
-      </div>
 
+        <p class="text-xl text-gray-600 font-medium mb-2">購物車是空的</p>
+        <p class="text-gray-400 mb-8">快去挑選喜歡的商品吧!</p>
+
+        <button
+          @click="goBack"
+          class="px-8 py-3 bg-red-500 text-white font-medium rounded-xl hover:bg-red-600 transition"
+        >
+          返回購買頁面
+        </button>
+      </div>
     </div>
   </div>
 </template>
